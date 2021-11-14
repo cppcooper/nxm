@@ -1,6 +1,12 @@
-[submodule "extern/gumbo"]
-	path = extern/gumbo
-	url = https://github.com/google/gumbo-parser.git
 [submodule "extern/cpr"]
 	path = extern/cpr
 	url = https://github.com/libcpr/cpr.git
+[submodule "extern/nlohmann-json"]
+	path = extern/nlohmann-json
+	url = https://github.com/nlohmann/json.git
+[submodule "extern/cli11"]
+	path = extern/cli11
+	url = https://github.com/CLIUtils/CLI11.git
+[submodule "extern/gumbo-query"]
+	path = extern/gumbo-query
+	url = https://github.com/lazytiger/gumbo-query.git
