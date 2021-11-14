@@ -23,12 +23,12 @@ git submodule update
 ```
 #### Submodules
 The submodules you need to initialize.
-| Library | Purpose | URI |
-|---------|---------|-----|
-| [gumbo-query](extern/gumbo-query) | HTML parser | <ul><li>[external repo](https://github.com/jtv/libpqxx.git) <li>[docs - API](https://libpqxx.readthedocs.io/en/stable/a01382.html) |
-| [nlohmann/json](extern/nlohmann-json) | json API | <ul><li>[external repo](https://github.com/nlohmann/json.git) <li>[docs - integration](https://github.com/nlohmann/json#integration) <li>[docs - API](https://nlohmann.github.io/json/api/basic_json/) |
-| [cpr](extern/cpr) | curl | <ul><li>[external repo](https://github.com/google/googletest.git) |
-| [cli11](extern/cli11) | command line parser | <ul><li>[external repo](https://github.com/google/googletest.git) |
+| Library | Purpose | Docs |
+|---------|---------|------|
+| [gumbo-query](https://github.com/cppcooper/gumbo-query) | HTML parser | `make doc` |
+| [nlohmann/json](https://github.com/nlohmann/json) | json API | <ul><li>[docs - integration](https://github.com/nlohmann/json#integration) <li>[docs - API](https://nlohmann.github.io/json/api/basic_json/) |
+| [cpr](https://github.com/libcpr/cpr) | curl | https://docs.libcpr.org/ |
+| [cli11](https://github.com/CLIUtils/CLI11) | command line parser | https://github.com/CLIUtils/CLI11/tree/main#usage |
 
 ### Build
 The project is configured to build a plugin (dll/so) (target `'data-anonymizer'`) binary, then copy it to `docker/plugins` where the orthanc docker server can read it.
