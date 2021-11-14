@@ -26,7 +26,7 @@ The submodules you need to initialize.
 | Library | Purpose | Docs |
 |---------|---------|------|
 | [gumbo-query](https://github.com/cppcooper/gumbo-query) | HTML parser | `make doc` |
-| [nlohmann/json](https://github.com/nlohmann/json) | json API | <ul><li>[docs - integration](https://github.com/nlohmann/json#integration) <li>[docs - API](https://nlohmann.github.io/json/api/basic_json/) |
+| [nlohmann/json](https://github.com/nlohmann/json) | json API | https://nlohmann.github.io/json/api/basic_json/ |
 | [cpr](https://github.com/libcpr/cpr) | curl | https://docs.libcpr.org/ |
 | [cli11](https://github.com/CLIUtils/CLI11) | command line parser | https://github.com/CLIUtils/CLI11/tree/main#usage |
 
