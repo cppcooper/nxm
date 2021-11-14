@@ -14,6 +14,10 @@ add_subdirectory(extern/cpr)
 add_subdirectory(extern/cli11)
 add_subdirectory(extern/nlohmann-json)
 include_directories(include)
+include_directories(extern/gumbo-query/include)
+include_directories(extern/nlohmann-json/single_include)
+include_directories(extern/cpr/include)
+include_directories(extern/cli11/include)
 
 # target
 set(EXE_TARGET ${CMAKE_PROJECT_NAME})
