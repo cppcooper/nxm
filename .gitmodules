@@ -9,4 +9,4 @@
 	url = https://github.com/CLIUtils/CLI11.git
 [submodule "extern/gumbo-query"]
 	path = extern/gumbo-query
-	url = https://github.com/lazytiger/gumbo-query.git
+	url = https://github.com/cppcooper/gumbo-query.git
