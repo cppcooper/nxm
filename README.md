@@ -19,8 +19,8 @@ cd nxm
 git submodule init
 git submodule update
 ```
-#### Submodules
-The submodules you need to initialize.
+#### Dependencies
+The libraries being used. CPR didn't play nice as a submodule, so just install manually `yay -Sy cpr` (for arch users).
 | Library | Purpose | Docs |
 |---------|---------|------|
 | [gumbo-query](https://github.com/cppcooper/gumbo-query) | HTML parser | `make doc` |
