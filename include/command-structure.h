@@ -16,6 +16,7 @@ struct Nxm {
     CLI::App* list_tracked = list->add_subcommand("tracked", "all tracked mods for a game");
     CLI::App* list_endorsed = list->add_subcommand("endorsed", "all endorsed mods for a game");
     CLI::App* list_trending = list->add_subcommand("trending", "top 10 trending mods for a game");
+    CLI::App* list_mod_files = list->add_subcommand("mod-files", "all mod's files");
 //    CLI::App* list = nxm.add_subcommand("list");
 //    CLI::App* list_games = list->add_subcommand("games", "all Nexus games");
 //    CLI::App* list_tracked = list->add_subcommand("tracked", "all tracked mods for a game");
@@ -44,5 +45,7 @@ struct Nxm {
         add_game_option(list_endorsed);
         add_game_option(list_tracked);
         add_game_option(list_trending);
+
+        add_mod_option(list_mod_files);
     }
 };
