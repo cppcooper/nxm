@@ -13,11 +13,9 @@ This software has been developed as a plugin to run on Orthanc DICOM servers.
 Don't forget to populate submodules.
 ```bash
 # clone repo
-git clone https://github.com/BCCF-UBCO-AD/Orthanc-TMI.git orthanc-tmi
-cd orthanc-tmi
-# develop is where all the action is
-git checkout develop
-# we need to populate submodules (googletest)
+git clone https://github.com/cppcooper/nxm.git
+cd nxm
+# we need to populate submodules
 git submodule init
 git submodule update
 ```
@@ -31,8 +29,7 @@ The submodules you need to initialize.
 | [cli11](https://github.com/CLIUtils/CLI11) | command line parser | https://github.com/CLIUtils/CLI11/tree/main#usage |
 
 ### Build
-The project is configured to build a plugin (dll/so) (target `'data-anonymizer'`) binary, then copy it to `docker/plugins` where the orthanc docker server can read it.
-
+Straight forward build process. No installation config yet.
 ```bash
 mkdir build
 cd build
