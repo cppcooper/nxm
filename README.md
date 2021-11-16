@@ -6,6 +6,8 @@ NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/) .
     - [Clone](#clone)
         - [Submodules](#submodules)
     - [Building](#build)
+    - [Install](#install)
+- [Usage](#usage)
 
 This software has been developed as a plugin to run on Orthanc DICOM servers.
 ## Getting Started
@@ -19,6 +21,7 @@ cd nxm
 git submodule init
 git submodule update
 ```
+
 #### Dependencies
 The libraries being used. CPR didn't play nice as a submodule, so just install manually `yay -Sy cpr` (for arch users).
 | Library | Purpose | Docs |
@@ -49,3 +52,22 @@ cd build
 cmake .. -G Ninja
 ninja
 ```
+
+### Install
+Installing is pretty easy. 
+```bash
+# clone repo
+git clone https://github.com/cppcooper/nxm.git
+cd nxm
+# we need to populate submodules
+git submodule init
+git submodule update
+# build/install
+mkdir build
+cd build
+cmake .. -G Ninja
+sudo ninja install
+```
+
+## Usage
+coming soon
