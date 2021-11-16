@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
         char* buffer = new char[size];
         std::fstream config_file(config_path);
         config_file.read(buffer,size);
-        //std::cout << buffer << std::endl;
+        config_file.close();
         try {
             nlm::json config = nlm::json::parse(buffer);
             auto key = config["apikey"];
