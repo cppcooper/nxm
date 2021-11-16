@@ -19,7 +19,7 @@ fs::path GetHome() {
 }
 
 
-extern int nxm(std::string &apikey, Nxm &cli);
+extern int nxm(std::string &apikey, const Nxm &cli);
 int main(int argc, char *argv[]){
     Nxm cli;
     fs::path home = GetHome();
