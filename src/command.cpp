@@ -5,6 +5,7 @@ namespace globals {
 }
 
 int Command::sendRequest(){
+    if(!valid_args) return -1;
     switch(request_type){
         case type::GET:
             r = cpr::Get(cpr::Url(uri),
@@ -53,6 +54,7 @@ int Command::sendRequest(){
                 parent->r = cpr::Response(r);
                 parent->command_type = command_type;
                 parent->request_type = request_type;
+                parent->uri = uri;
             } else {
                 return -1;
             }
