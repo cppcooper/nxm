@@ -12,15 +12,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*)
 set(CPR_DIR .) #cpr-config.cmake directory
 find_package(CPR)
-add_subdirectory(extern/gumbo-query)
-add_subdirectory(extern/cli11)
-add_subdirectory(extern/nlohmann-json)
 include_directories(include)
 include_directories(extern/gumbo-query/include)
 include_directories(extern/nlohmann-json/single_include)
 include_directories(extern/cli11/include)
+link_directories(extern/gumbo-query/lib)
 
 # target
 set(EXE_TARGET ${CMAKE_PROJECT_NAME})
 add_executable(${EXE_TARGET} ${SOURCES})
-target_link_libraries(${EXE_TARGET} cpr)
+target_link_libraries(${EXE_TARGET} cpr libgq.a)
+
+# install target
+install(TARGETS ${EXE_TARGET} DESTINATION bin)
