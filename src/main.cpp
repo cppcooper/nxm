@@ -41,7 +41,23 @@ int main(int argc, char *argv[]){
             if (!key.is_null() && key.is_string()) {
                 std::string apikey = key.get<std::string>();
                 CLI11_PARSE(cli.nxm, argc, argv);
-                return nxm(apikey, cli);
+                int status = nxm(apikey, cli);
+                if(status != 0){
+                    switch(status){
+                        case -1:
+                            std::cerr << "Couldn't send request to nexus." << std::endl;
+                            break;
+                        case -2:
+                            std::cerr << "The API key (field: \"apikey\") in ~/.nxm.json is invalid." << std::endl;
+                            break;
+                        case 2:
+                            return 1;
+                        default:
+                            std::cerr << "An unknown error has occurred. Please report this." << std::endl;
+                    }
+                    return 1;
+                }
+                return 0;
             } else {
                 std::cerr << "No API key configured. Acquire and place an apikey into " << config_path << std::endl;
             }

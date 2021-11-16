@@ -42,6 +42,10 @@ int Command::sendRequest(){
             }
             auto sub_command = command->get_subcommands()[0];
             Command c2(sub_command, cli, this);
+            if(!c2.good()){
+                std::cerr << c2.getError() << std::endl;
+                return 2;
+            }
             return c2.sendRequest();
     }
     switch(command_type){
@@ -56,6 +60,7 @@ int Command::sendRequest(){
                 parent->request_type = request_type;
                 parent->uri = uri;
             } else {
+                std::cerr << "report this error. parent is nullptr" << std::endl;
                 return -1;
             }
     }

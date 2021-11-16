@@ -25,18 +25,20 @@ export int nxm(std::string &apikey, const Nxm &cli){
         if(nxm_sub.size() == 1){
             Command command(nxm_sub[0], cli);
             if(command.good()) {
-                if (command.sendRequest() == 0) {
-                    return parse_response(command, cli);
+                int status = command.sendRequest();
+                if (status != 0) {
+                    return status;
                 }
+                return parse_response(command, cli);
             } else {
                 std::cerr << command.getError() << std::endl;
+                return 2;
             }
-            return 1;
         }
-    } else {
-        std::cerr << "The API key (field: \"apikey\") in ~/.nxm.json is invalid." << std::endl;
+        std::cerr << "Command was malformed. See `nxm --help`" << std::endl;
+        return 2;
     }
-    return 1;
+    return -2;
 }
 
 extern int web_scraper(const Nxm &cli);
@@ -48,14 +50,6 @@ int parse_response(const Command &c, const Nxm &cli){
         switch (c.type()) {
             case type::download:
                 //todo: need premium to view format
-                break;
-            case type::track:
-                break;
-            case type::untrack:
-                break;
-            case type::endorse:
-                break;
-            case type::abstain:
                 break;
             case type::list_games:
                 for(const auto &game : json){
@@ -88,11 +82,21 @@ int parse_response(const Command &c, const Nxm &cli){
                 break;
             case type::list_dependencies:
                 return web_scraper(cli);
+            // These commands are actions
+            case type::track:
+            case type::untrack:
+            case type::endorse:
+            case type::abstain:
+                // if we're this far then we likely have done the action
+                std::cout << "did thing " << c.name() << std::endl;
+                break;
             case type::INVALID:
             case type::list:
+            default:
                 return -1;
         }
         return 0;
     }
+    std::cerr << "Error " << c.responseCode() << std::endl << c.output() << std::endl;
     return c.responseCode();
 }

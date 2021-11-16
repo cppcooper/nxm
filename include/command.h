@@ -70,5 +70,6 @@ public:
     const int responseCode() const { return r.status_code; }
     const std::string& getURI() const { return uri; }
     const std::string& getError() const { return error; }
+    const std::string& name() const { return command->get_name(); }
     bool good() const { return valid_args; }
 };
