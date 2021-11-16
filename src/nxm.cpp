@@ -6,7 +6,6 @@
 #include <filesystem>
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
-#include <gumbo-query/Document.h>
 
 namespace fs = std::filesystem;
 namespace nlm = nlohmann;
@@ -45,8 +44,10 @@ int parse_response(const Command &c, const Nxm &cli){
     //std::cout << c.getURI() << std::endl;
     if(c.responseCode() == 200) {
         nlm::json json = nlm::json::parse(c.output());
+        bool print_once = false;
         switch (c.type()) {
             case type::download:
+                //todo: need premium to view format
                 break;
             case type::track:
                 break;
@@ -64,12 +65,26 @@ int parse_response(const Command &c, const Nxm &cli){
                 }
                 break;
             case type::list_tracked:
-                break;
             case type::list_endorsed:
+                for(const auto &mod : json){
+                    if(mod["domain_name"].get<std::string>() == cli.arg1 ) {
+                        std::cout << mod["mod_id"] << std::endl;
+                    }
+                }
                 break;
             case type::list_trending:
+                for(const auto &mod : json){
+                    std::cout << mod["mod_id"] << " " << mod["name"] << std::endl;
+                }
                 break;
             case type::list_files:
+                for(const auto &file : json["files"]){
+                    if(!print_once){
+                        print_once = true;
+                        std::cout << file["name"] << std::endl;
+                    }
+                    std::cout << file["file_id"] << " " << file["file_name"] << std::endl;
+                }
                 break;
             case type::list_dependencies:
                 return web_scraper(cli);
