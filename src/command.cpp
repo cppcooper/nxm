@@ -34,14 +34,22 @@ int Command::sendRequest(){
             break;
         case type::NONE:
             if(command_type != type::list){
-                return 1;
+                return -1;
             }
             if (command->get_subcommands().size() != 1) {
-                return 1;
+                return -1;
             }
             auto sub_command = command->get_subcommands()[0];
             Command c2(sub_command, cli);
             return c2.sendRequest();
+    }
+    switch(command_type){
+        case type::list_games:
+        case type::list_tracked:
+        case type::list_endorsed:
+        case type::list_trending:
+        case type::list_files:
+            return 1;
     }
     return 0;
 }

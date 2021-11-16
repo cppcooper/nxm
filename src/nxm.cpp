@@ -19,7 +19,16 @@ export int nxm(std::string &apikey, const Nxm &cli){
         auto nxm_sub = cli.nxm.get_subcommands();
         if(nxm_sub.size() == 1){
             Command command(nxm_sub[0], cli);
-            return command.sendRequest();
+            switch(command.sendRequest()){
+                case -1: // no request was sent
+                    return 1;
+                case 0: // command sent request
+                    break;
+                case 1: // sub command sent request
+                    break;
+            }
+            std::cout << command.output();
+            return 0;
         }
     } else {
         std::cerr << "The API key (field: \"apikey\") in ~/.nxm.json is invalid." << std::endl;
