@@ -83,27 +83,27 @@ int search_dependencies(step i, const GWNode &root, type k = invalid){
                         buffer = link.getAttribute("href");
                         tmp = buffer.find_last_of("/") + 1;
                         buffer = std::string(std::string_view(buffer.c_str()+tmp, buffer.size()-tmp));
-                        printf("%-10s %-s70 %-40s\n",buffer.c_str(), link.getAttribute("href").c_str(), link.innerText().c_str());
+                        printf(" %-10s %-s70 %-40s\n",buffer.c_str(), link.getAttribute("href").c_str(), link.innerText().c_str());
                         break;
                     case offsite:
-                        std::cout << link.innerText() << " " << link.getAttribute("href") << std::endl;
+                        std::cout << " " << link.innerText() << " " << link.getAttribute("href") << std::endl;
                         break;
                 }
             }
-            std::cout << std::endl;
             return 0;
     }
     return -(int)i;
 }
 
-//GumboNode* search(GumboNode* node);
 int web_scraper(const Nxm &cli) {
     std::string uri = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
     replace(uri, "{game_domain}", cli.arg1);
     replace(uri, "{mod_id}", cli.arg2);
+    // todo: implement caching
     cpr::Response r = cpr::Get(cpr::Url{uri});
     if(r.status_code == 200) {
         auto doc = GWDocument::parse(r.text);
+        std::cout << "Dependencies for mod " << cli.arg2 << std::endl;
         search_dependencies(step::one, doc.rootNode());
         return 0;
     }
