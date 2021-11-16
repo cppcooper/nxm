@@ -55,44 +55,44 @@ int Command::sendRequest(){
 }
 
 void Command::make_uri() {
-    char buffer[256];
-    strcat(buffer,"https://api.nexusmods.com");
+    std::stringstream buffer;
+    buffer << "http://api.nexusmods.com";
     switch(command_type){
         case type::INVALID:
             break;
         case type::download:
-            strcat(buffer,download_uri);
+            buffer << download_uri;
             break;
         case type::track:
-            strcat(buffer,track_uri);
+            buffer << track_uri;
             break;
         case type::untrack:
-            strcat(buffer,untrack_uri);
+            buffer << untrack_uri;
             break;
         case type::endorse:
-            strcat(buffer,endorse_uri);
+            buffer << endorse_uri;
             break;
         case type::abstain:
-            strcat(buffer,abstain_uri);
+            buffer << abstain_uri;
             break;
         case type::list:
         case type::list_games:
-            strcat(buffer,list_games_uri);
+            buffer << list_games_uri;
             break;
         case type::list_tracked:
-            strcat(buffer,list_tracked_uri);
+            buffer << list_tracked_uri;
             break;
         case type::list_endorsed:
-            strcat(buffer, list_endorsed_uri);
+            buffer <<  list_endorsed_uri;
             break;
         case type::list_trending:
-            strcat(buffer, list_trending_uri);
+            buffer <<  list_trending_uri;
             break;
         case type::list_files:
-            strcat(buffer, list_files_uri);
+            buffer <<  list_files_uri;
             break;
     }
-    uri = std::string(buffer);
+    uri = buffer.str();
     auto replace = [](std::string& str, const std::string& from, const std::string& to) {
         size_t start_pos = str.find(from);
         if(start_pos == std::string::npos)
