@@ -7,7 +7,7 @@ namespace globals {
 int Command::sendRequest(){
     switch(request_type){
         case type::GET:
-            r = cpr::Get(cpr::Url(getURI()),
+            r = cpr::Get(cpr::Url(uri),
                          cpr::Header{{"apikey", globals::apikey}});
             break;
         case type::POST:
