@@ -62,5 +62,7 @@ public:
         make_uri();
     }
     int sendRequest();
-    std::string output() const { return r.text; }
+    const std::string& output() const { return r.text; }
+    const type::command& type() const { return command_type; }
+    const int responseCode() const { return r.status_code; }
 };
