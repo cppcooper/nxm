@@ -41,7 +41,6 @@ export int nxm(std::string &apikey, const Nxm &cli){
     return -2;
 }
 
-extern int web_scraper(const Nxm &cli);
 int parse_response(const Command &c, const Nxm &cli){
     //std::cout << c.getURI() << std::endl;
     if(c.responseCode() == 200) {
@@ -80,8 +79,6 @@ int parse_response(const Command &c, const Nxm &cli){
                     std::cout << file["file_id"] << " " << file["file_name"] << std::endl;
                 }
                 break;
-            case type::list_dependencies:
-                return web_scraper(cli);
             // These commands are actions
             case type::track:
             case type::untrack:
@@ -90,6 +87,8 @@ int parse_response(const Command &c, const Nxm &cli){
                 // if we're this far then we likely have done the action
                 std::cout << "did thing " << c.name() << std::endl;
                 break;
+            case type::list_dependencies:
+                return 0;
             case type::INVALID:
             case type::list:
             default:
@@ -97,6 +96,8 @@ int parse_response(const Command &c, const Nxm &cli){
         }
         return 0;
     }
-    std::cerr << "Error " << c.responseCode() << std::endl << c.output() << std::endl;
+    if(c.responseCode() != 0) {
+        std::cerr << "Error " << c.responseCode() << std::endl << c.output() << std::endl;
+    }
     return c.responseCode();
 }

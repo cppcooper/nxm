@@ -5,4 +5,5 @@
 int web_scraper(const Nxm &cli){
     std::cout << "not implemented" << std::endl;
     return 1;
+    return -1;
 }

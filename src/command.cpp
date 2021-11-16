@@ -4,6 +4,7 @@ namespace globals {
     extern std::string apikey;
 }
 
+extern int web_scraper(const Nxm &cli);
 int Command::sendRequest(){
     if(!valid_args) return -1;
     switch(request_type){
@@ -34,6 +35,14 @@ int Command::sendRequest(){
                                             {"mod_id",      cli.arg2}});
             break;
         case type::NONE:
+            switch(command_type){
+                case type::list_dependencies:
+                    return web_scraper(cli);
+                case type::list:
+                    break;
+                default:
+                    return -1;
+            }
             if(command_type != type::list){
                 return -1;
             }
@@ -188,8 +197,10 @@ void Command::parse_command_type(const std::string &command){
     else if(command == "mod-files") {
         command_type = type::list_files;
         request_type = type::GET;
-    }
-    else {
+    } else if(command == "dependencies") {
+        command_type = type::list_dependencies;
+        request_type = type::NONE;
+    } else {
         command_type = type::INVALID;
         request_type = type::NONE;
     }
