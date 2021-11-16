@@ -4,7 +4,7 @@ namespace globals {
     extern std::string apikey;
 }
 
-int Command::run(){
+int Command::sendRequest(){
     switch(request_type){
         case type::GET:
             r = cpr::Get(cpr::Url(getURI()),
@@ -41,7 +41,7 @@ int Command::run(){
             }
             auto sub_command = command->get_subcommands()[0];
             Command c2(sub_command, cli);
-            return c2.run();
+            return c2.sendRequest();
     }
     return 0;
 }

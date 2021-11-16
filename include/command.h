@@ -53,6 +53,6 @@ public:
         parse_command_type(command->get_name());
         make_uri();
     }
-    int run();
+    int sendRequest();
     std::string output() const { return r.text; }
 };
