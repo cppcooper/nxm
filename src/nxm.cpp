@@ -25,8 +25,12 @@ export int nxm(std::string &apikey, const Nxm &cli){
         auto nxm_sub = cli.nxm.get_subcommands();
         if(nxm_sub.size() == 1){
             Command command(nxm_sub[0], cli);
-            if(command.sendRequest() == 0) {
-                return parse_response(command, cli);
+            if(command.good()) {
+                if (command.sendRequest() == 0) {
+                    return parse_response(command, cli);
+                }
+            } else {
+                std::cerr << command.getError() << std::endl;
             }
             return 1;
         }

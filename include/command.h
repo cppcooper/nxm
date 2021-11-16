@@ -48,6 +48,8 @@ protected:
     type::command command_type;
     type::request request_type;
     std::string uri;
+    std::string error;
+    bool valid_args = false;
     void make_uri();
     void parse_command_type(const std::string &command);
 public:
@@ -66,4 +68,6 @@ public:
     const std::string& output() const { return r.text; }
     const type::command& type() const { return command_type; }
     const int responseCode() const { return r.status_code; }
+    const std::string& getError() const { return error; }
+    bool good() const { return valid_args; }
 };

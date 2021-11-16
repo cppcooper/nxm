@@ -108,22 +108,32 @@ void Command::make_uri() {
     };
     switch(command_type){
         case type::download:
+            valid_args = !(cli.arg1.empty() || cli.arg2.empty() || cli.arg3.empty());
+            error = "usage: nxm download <game> <mod> <file>";
             replace(uri, "{game_domain_name}", cli.arg1);
             replace(uri, "{mod_id}", cli.arg2);
             replace(uri, "{id}", cli.arg3);
             break;
         case type::endorse:
         case type::abstain:
+            valid_args = !(cli.arg1.empty() || cli.arg2.empty());
+            error = "usage: nxm (endorse|abstain) <game> <mod>";
             replace(uri, "{game_domain_name}", cli.arg1);
             replace(uri, "{id}", cli.arg2);
             break;
         case type::list_trending:
+            valid_args = !(cli.arg1.empty());
+            error = "usage: nxm list trending <game>";
             replace(uri, "{game_domain_name}", cli.arg1);
             break;
         case type::list_files:
+            valid_args = !(cli.arg1.empty() || cli.arg2.empty());
+            error = "usage: nxm list mod-files <game> <mod>";
             replace(uri, "{game_domain_name}", cli.arg1);
             replace(uri, "{mod_id}", cli.arg2);
             break;
+        default:
+            valid_args = true;
     }
 }
 
