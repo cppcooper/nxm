@@ -40,6 +40,7 @@ private:
     const char* list_trending_uri = "/v1/games/{game_domain_name}/mods/trending.json"; //GET
     const char* list_files_uri = "/v1/games/{game_domain_name}/mods/{mod_id}/files.json"; //GET
 protected:
+    Command* parent = nullptr;
     const Nxm &cli;
     const CLI::App* command;
     cpr::Response r;
@@ -50,6 +51,13 @@ protected:
     void parse_command_type(const std::string &command);
 public:
     explicit Command(const CLI::App* command, const Nxm &cli) : command(command), cli(cli) {
+        parse_command_type(command->get_name());
+        make_uri();
+    }
+    explicit Command(const CLI::App* command, const Nxm &cli, Command* parent)
+            : command(command),
+              cli(cli),
+              parent(parent) {
         parse_command_type(command->get_name());
         make_uri();
     }

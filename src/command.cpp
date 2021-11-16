@@ -40,7 +40,7 @@ int Command::sendRequest(){
                 return -1;
             }
             auto sub_command = command->get_subcommands()[0];
-            Command c2(sub_command, cli);
+            Command c2(sub_command, cli, this);
             return c2.sendRequest();
     }
     switch(command_type){
@@ -49,7 +49,13 @@ int Command::sendRequest(){
         case type::list_endorsed:
         case type::list_trending:
         case type::list_files:
-            return 1;
+            if(parent) {
+                parent->r = cpr::Response(r);
+                parent->command_type = command_type;
+                parent->request_type = request_type;
+            } else {
+                return -1;
+            }
     }
     return 0;
 }
