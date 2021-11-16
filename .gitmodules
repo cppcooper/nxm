@@ -4,6 +4,6 @@
 [submodule "extern/cli11"]
 	path = extern/cli11
 	url = https://github.com/CLIUtils/CLI11.git
-[submodule "extern/gumbo-query"]
-	path = extern/gumbo-query
-	url = https://github.com/cppcooper/gumbo-query.git
+[submodule "extern/gumbo-wrapper"]
+	path = extern/gumbo-wrapper
+	url = https://github.com/cppcooper/gumbo-wrapper.git
