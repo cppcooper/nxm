@@ -11,7 +11,6 @@ namespace fs = std::filesystem;
 namespace nlm = nlohmann;
 
 namespace globals {
-    std::string dep_pattern = "(Nexus requirements|Off-site requirements)";
     std::string apikey;
 }
 
