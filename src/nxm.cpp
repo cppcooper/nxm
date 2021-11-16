@@ -42,6 +42,7 @@ export int nxm(std::string &apikey, const Nxm &cli){
 
 extern int web_scraper(const Nxm &cli);
 int parse_response(const Command &c, const Nxm &cli){
+    //std::cout << c.getURI() << std::endl;
     if(c.responseCode() == 200) {
         nlm::json json = nlm::json::parse(c.output());
         switch (c.type()) {
