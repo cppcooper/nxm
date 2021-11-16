@@ -17,6 +17,7 @@ namespace type {
         list_endorsed,
         list_trending,
         list_files,
+        list_dependencies,
         INVALID = 0xFF
     };
     enum request{

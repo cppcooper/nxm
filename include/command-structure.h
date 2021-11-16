@@ -17,6 +17,7 @@ struct Nxm {
     CLI::App* list_endorsed = list->add_subcommand("endorsed", "all endorsed mods for a game");
     CLI::App* list_trending = list->add_subcommand("trending", "top 10 trending mods for a game");
     CLI::App* list_mod_files = list->add_subcommand("mod-files", "all mod's files");
+    CLI::App* list_dependencies_files = list->add_subcommand("dependencies", "web scape the mod page for dependencies");
 //    CLI::App* list = nxm.add_subcommand("list");
 //    CLI::App* list_games = list->add_subcommand("games", "all Nexus games");
 //    CLI::App* list_tracked = list->add_subcommand("tracked", "all tracked mods for a game");
@@ -24,7 +25,7 @@ struct Nxm {
     std::string arg1;
     std::string arg2;
     std::string arg3;
-    //std::string arg4;
+    std::string arg4;
     bool print = false;
     Nxm(){
         auto add_game_option = [&](CLI::App* cli) {
@@ -35,7 +36,8 @@ struct Nxm {
             cli->add_option("mod",arg2, "mod id");
         };
         add_mod_option(download);
-        download->add_option("path", arg3, "relative or absolute path");
+        download->add_option("id", arg3, "file id");
+        download->add_option("path", arg4, "relative or absolute path");
         download->add_flag("-p,--print",print,"print a download link, instead of downloading");
         add_mod_option(track);
         add_mod_option(untrack);
@@ -47,5 +49,6 @@ struct Nxm {
         add_game_option(list_trending);
 
         add_mod_option(list_mod_files);
+        add_mod_option(list_dependencies_files);
     }
 };

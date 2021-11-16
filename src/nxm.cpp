@@ -36,6 +36,7 @@ export int nxm(std::string &apikey, const Nxm &cli){
     return 1;
 }
 
+extern int web_scraper(const Nxm &cli);
 int parse_response(const Command &c, const Nxm &cli){
     if(c.responseCode() == 200) {
         nlm::json json = nlm::json::parse(c.output());
@@ -65,6 +66,8 @@ int parse_response(const Command &c, const Nxm &cli){
                 break;
             case type::list_files:
                 break;
+            case type::list_dependencies:
+                return web_scraper(cli);
             case type::INVALID:
             case type::list:
                 return -1;
