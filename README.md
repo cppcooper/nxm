@@ -4,9 +4,8 @@ NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/) .
 ### Table of Contents
 - [Getting Started](#getting-started)
     - [Clone](#clone)
-        - [Submodules](#submodules)
-    - [Building](#build)
-    - [Install](#install)
+        - [Dependencies](#dependencies)
+- [Install](#install)
 - [Usage](#usage)
 
 This software has been developed as a plugin to run on Orthanc DICOM servers.
@@ -31,29 +30,7 @@ The libraries being used. CPR didn't play nice as a submodule, so just install m
 | [cpr](https://github.com/libcpr/cpr) | curl | https://docs.libcpr.org/ |
 | [cli11](https://github.com/CLIUtils/CLI11) | command line parser | https://github.com/CLIUtils/CLI11/tree/main#usage |
 
-### Build
-Straight forward build process. No installation config yet.
-```bash
-mkdir build
-cd build
-# configure build
-# on linux
-cmake ..
-# on windows, pretty sure they've got VS as the default
-cmake .. -G "Unix Makefiles"
-
-# perform build
-make
-```
-or if you're a cool ninja
-```bash
-mkdir build
-cd build
-cmake .. -G Ninja
-ninja
-```
-
-### Install
+## Install
 Installing is pretty easy. 
 ```bash
 # clone repo
