@@ -29,7 +29,7 @@ enum type{
     invalid = 0xFF
 };
 
-int search_dependencies(step i, const GWNode &root, type k = invalid){
+int search_dependencies(nlm::json &json, step i, const GWNode &root, type k = invalid){
     step next = (step)(i + 1);
     std::vector<GWNode> nodes;
     std::string buffer;
@@ -97,16 +97,20 @@ int search_dependencies(step i, const GWNode &root, type k = invalid){
 }
 
 int web_scraper(const Nxm &cli) {
-    std::string uri = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
-    replace(uri, "{game_domain}", cli.arg1);
-    replace(uri, "{mod_id}", cli.arg2);
-    // todo: implement caching
-    cpr::Response r = cpr::Get(cpr::Url{uri});
-    if(r.status_code == 200) {
-        auto doc = GWDocument::parse(r.text);
-        std::cout << "Dependencies for mod " << cli.arg2 << std::endl;
-        search_dependencies(step::one, doc.rootNode());
-        return 0;
+    int status = 0;
+    nvm::json dependencies;
+    for(auto mod : cli.mods) { 
+        std::string uri = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
+        replace(uri, "{game_domain}", cli.arg1);
+        replace(uri, "{mod_id}", mod);
+        // todo: implement caching
+        cpr::Response r = cpr::Get(cpr::Url{uri});
+        if(r.status_code == 200) {
+            auto doc = GWDocument::parse(r.text);
+            std::cout << "Dependencies for mod " << mod << std::endl;
+            search_dependencies(dependencies[mod], step::one, doc.rootNode());
+            continue;
+        }
+        return r.status_code;
     }
-    return r.status_code;
 }
