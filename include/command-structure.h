@@ -50,6 +50,7 @@ struct Nxm {
         add_game_option(list_trending);
 
         add_mod_option(list_mod_files);
+        add_game_option(list_dependencies_files);
         list_dependencies_files->add_option("mods", mods, "mod ids");
     }
 };
