@@ -48,6 +48,7 @@ int parse_response(const Command &c, const Nxm &cli){
         switch (c.type()) {
             case type::download:
                 //todo: need premium to view format
+                std::cout << "not implemented yet" << std::endl;
                 break;
             case type::list_games:
                 for(const auto &game : json){
