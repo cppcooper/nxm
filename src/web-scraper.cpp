@@ -56,7 +56,8 @@ int search_dependencies(step i, const GWNode &root, type k = invalid){
                         }
                         continue;
                     } else if (j == 0) {
-                        return -404;
+                        std::cout << " None" << std::endl;
+                        return 0;
                     }
                 } else {
                     std::cerr << "Error: HTML parsing: couldn't find h3 tag under tabbed-block" << std::endl;
@@ -82,8 +83,8 @@ int search_dependencies(step i, const GWNode &root, type k = invalid){
                     case onsite:
                         buffer = link.getAttribute("href");
                         tmp = buffer.find_last_of("/") + 1;
-                        buffer = std::string(std::string_view(buffer.c_str()+tmp, buffer.size()-tmp));
-                        printf(" %-10s %-s70 %-40s\n",buffer.c_str(), link.getAttribute("href").c_str(), link.innerText().c_str());
+                        buffer = std::string(std::string_view(buffer.c_str() + tmp, buffer.size() - tmp));
+                        printf(" %-10s %-s70 %-40s\n", buffer.c_str(), link.getAttribute("href").c_str(), link.innerText().c_str());
                         break;
                     case offsite:
                         std::cout << " " << link.innerText() << " " << link.getAttribute("href") << std::endl;
