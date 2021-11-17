@@ -26,6 +26,7 @@ struct Nxm {
     std::string arg2;
     std::string arg3;
     std::string arg4;
+    Std::vector<int> mods;
     bool print = false;
     Nxm(){
         auto add_game_option = [&](CLI::App* cli) {
@@ -49,6 +50,6 @@ struct Nxm {
         add_game_option(list_trending);
 
         add_mod_option(list_mod_files);
-        add_mod_option(list_dependencies_files);
+        list_dependencies_files->add_option("mods", mods, "mod ids");
     }
 };
