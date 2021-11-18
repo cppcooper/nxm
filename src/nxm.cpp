@@ -88,6 +88,9 @@ int parse_response(const Command &c, const Nxm &cli){
                 std::cout << "did thing " << c.name() << std::endl;
                 break;
             case type::list_dependencies:
+                for(auto &j : c.getJson()){
+                    std::cout << j << std::endl;
+                }
                 return 0;
             case type::INVALID:
             case type::list:

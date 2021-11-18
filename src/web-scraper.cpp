@@ -84,10 +84,14 @@ int search_dependencies(nlm::json &json, step i, const GWNode &root, type k = in
                         buffer = link.getAttribute("href");
                         tmp = buffer.find_last_of("/") + 1;
                         buffer = std::string(std::string_view(buffer.c_str() + tmp, buffer.size() - tmp));
-                        printf(" %-10s %-s70 %-40s\n", buffer.c_str(), link.getAttribute("href").c_str(), link.innerText().c_str());
+                        json["onsite"] = {
+                            {"name",link.innerText()},
+                            {"mod_id",buffer},
+                            {"href", link.getAttribute("href")}};
                         break;
                     case offsite:
-                        std::cout << " " << link.innerText() << " " << link.getAttribute("href") << std::endl;
+                        json["offsite"] = {{"name",link.innerText()},
+                                           {"href",link.getAttribute("href")}};
                         break;
                 }
             }
@@ -96,12 +100,13 @@ int search_dependencies(nlm::json &json, step i, const GWNode &root, type k = in
     return -(int)i;
 }
 
-int web_scraper(const Nxm &cli) {
+nlm::json web_scraper(const Nxm &cli) {
+    std::string resource = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
+    replace(resource, "{game_domain}", cli.arg1);
     int status = 0;
     nvm::json dependencies;
     for(auto mod : cli.mods) { 
-        std::string uri = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
-        replace(uri, "{game_domain}", cli.arg1);
+        std::string uri = resource;
         replace(uri, "{mod_id}", mod);
         // todo: implement caching
         cpr::Response r = cpr::Get(cpr::Url{uri});
@@ -111,6 +116,7 @@ int web_scraper(const Nxm &cli) {
             search_dependencies(dependencies[mod], step::one, doc.rootNode());
             continue;
         }
-        return r.status_code;
+        //return r.status_code;
     }
+    return dependencies;
 }

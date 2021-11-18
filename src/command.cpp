@@ -9,19 +9,19 @@ int Command::sendRequest(){
     if(!valid_args) return -1;
     switch(request_type){
         case type::GET:
-            r = cpr::Get(cpr::Url(uri),
+            response.cpr = cpr::Get(cpr::Url(uri),
                          cpr::Header{{"apikey", globals::apikey}});
             break;
         case type::POST:
             switch(command_type){
                 case type::endorse:
                 case type::abstain:
-                    r = cpr::Post(cpr::Url(uri),
+                    response.cpr = cpr::Post(cpr::Url(uri),
                                   cpr::Header{{"apikey", globals::apikey}});
                     break;
                 // URI is void of parameters
                 case type::track:
-                    r = cpr::Post(cpr::Url(uri),
+                    response.cpr = cpr::Post(cpr::Url(uri),
                                   cpr::Header{{"apikey", globals::apikey}},
                                   cpr::Parameters{{"domain_name", cli.arg1},
                                                   {"mod_id",      cli.arg2}});
@@ -29,7 +29,7 @@ int Command::sendRequest(){
             }
             break;
         case type::DELETE:
-            r = cpr::Delete(cpr::Url(uri),
+            response.cpr = cpr::Delete(cpr::Url(uri),
                             cpr::Header{{"apikey", globals::apikey}},
                             cpr::Parameters{{"domain_name", cli.arg1},
                                             {"mod_id",      cli.arg2}});
@@ -37,7 +37,7 @@ int Command::sendRequest(){
         case type::NONE:
             switch(command_type){
                 case type::list_dependencies:
-                    return web_scraper(cli);
+                    response.json = web_scraper(cli);
                 case type::list:
                     break;
                 default:
@@ -64,7 +64,7 @@ int Command::sendRequest(){
         case type::list_trending:
         case type::list_files:
             if(parent) {
-                parent->r = cpr::Response(r);
+                parent->response.cpr = cpr::Response(r);
                 parent->command_type = command_type;
                 parent->request_type = request_type;
                 parent->uri = uri;
