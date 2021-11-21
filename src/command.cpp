@@ -4,46 +4,49 @@ namespace globals {
     extern std::string apikey;
 }
 
-extern int web_scraper(const Nxm &cli);
-int Command::sendRequest(){
-    if(!valid_args) return -1;
-    switch(request_type){
+extern nlm::json scrape_dependencies(const Nxm &cli);
+int Command::sendRequest() {
+    if (!valid_args) return -1;
+    switch (request_type) {
         case type::GET:
-            response.cpr = cpr::Get(cpr::Url(uri),
-                         cpr::Header{{"apikey", globals::apikey}});
+            response = cpr::Get(cpr::Url(uri),
+                                cpr::Header{{"apikey", globals::apikey}});
             break;
         case type::POST:
-            switch(command_type){
+            switch (command_type) {
                 case type::endorse:
                 case type::abstain:
-                    response.cpr = cpr::Post(cpr::Url(uri),
-                                  cpr::Header{{"apikey", globals::apikey}});
+                    response = cpr::Post(cpr::Url(uri),
+                                         cpr::Header{{"apikey", globals::apikey}});
                     break;
-                // URI is void of parameters
+                    // URI is void of parameters
                 case type::track:
-                    response.cpr = cpr::Post(cpr::Url(uri),
-                                  cpr::Header{{"apikey", globals::apikey}},
-                                  cpr::Parameters{{"domain_name", cli.arg1},
-                                                  {"mod_id",      cli.arg2}});
+                    response = cpr::Post(cpr::Url(uri),
+                                         cpr::Header{{"apikey", globals::apikey}},
+                                         cpr::Parameters{{"domain_name", cli.arg1},
+                                                         {"mod_id",      cli.arg2}});
                     break;
             }
             break;
         case type::DELETE:
-            response.cpr = cpr::Delete(cpr::Url(uri),
-                            cpr::Header{{"apikey", globals::apikey}},
-                            cpr::Parameters{{"domain_name", cli.arg1},
-                                            {"mod_id",      cli.arg2}});
+            response = cpr::Delete(cpr::Url(uri),
+                                   cpr::Header{{"apikey", globals::apikey}},
+                                   cpr::Parameters{{"domain_name", cli.arg1},
+                                                   {"mod_id",      cli.arg2}});
             break;
         case type::NONE:
-            switch(command_type){
+            switch (command_type) {
                 case type::list_dependencies:
-                    response.json = web_scraper(cli);
+                    json = scrape_dependencies(cli);
                 case type::list:
                     break;
                 default:
                     return -1;
             }
-            if(command_type != type::list){
+            if (command_type != type::list) {
+                if(command_type == type::list_dependencies){
+                    break;
+                }
                 return -1;
             }
             if (command->get_subcommands().size() != 1) {
@@ -51,20 +54,20 @@ int Command::sendRequest(){
             }
             auto sub_command = command->get_subcommands()[0];
             Command c2(sub_command, cli, this);
-            if(!c2.good()){
+            if (!c2.good()) {
                 std::cerr << c2.getError() << std::endl;
                 return 2;
             }
             return c2.sendRequest();
     }
-    switch(command_type){
+    switch (command_type) {
         case type::list_games:
         case type::list_tracked:
         case type::list_endorsed:
         case type::list_trending:
         case type::list_files:
-            if(parent) {
-                parent->response.cpr = cpr::Response(r);
+            if (parent) {
+                parent->response = cpr::Response(response);
                 parent->command_type = command_type;
                 parent->request_type = request_type;
                 parent->uri = uri;
@@ -72,6 +75,18 @@ int Command::sendRequest(){
                 std::cerr << "report this error. parent is nullptr" << std::endl;
                 return -1;
             }
+            break;
+        case type::list_dependencies:
+            if (parent) {
+                parent->json = json;
+                parent->command_type = command_type;
+                parent->request_type = request_type;
+                parent->uri = uri;
+            } else {
+                std::cerr << "report this error. parent is nullptr" << std::endl;
+                return -1;
+            }
+            break;
     }
     return 0;
 }

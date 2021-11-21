@@ -3,6 +3,9 @@
 #include <string>
 #include <cstring>
 #include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
+
+namespace nlm = nlohmann;
 
 namespace type {
     enum command{
@@ -44,10 +47,8 @@ protected:
     Command* parent = nullptr;
     const Nxm &cli;
     const CLI::App* command;
-    union {
-        cpr::Response cpr;
-        nlm::json json;
-    } response;
+    cpr::Response response;
+    nlm::json json;
     type::command command_type;
     type::request request_type;
     std::string uri;
@@ -68,10 +69,10 @@ public:
         make_uri();
     }
     int sendRequest();
-    const std::string& output() const { return response.cpr.text; }
-    const nlm::json& getJson() const { return reseponse.json; }
+    const std::string& output() const { return response.text; }
+    const nlm::json& getJson() const { return json; }
     const type::command& type() const { return command_type; }
-    const int responseCode() const { return r.status_code; }
+    const int responseCode() const { return response.status_code; }
     const std::string& getURI() const { return uri; }
     const std::string& getError() const { return error; }
     const std::string& name() const { return command->get_name(); }
