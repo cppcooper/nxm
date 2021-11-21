@@ -87,15 +87,16 @@ int parse_response(const Command &c, const Nxm &cli){
                 // if we're this far then we likely have done the action
                 std::cout << "did thing " << c.name() << std::endl;
                 break;
-            case type::list_dependencies:
-                for(auto &j : c.getJson()){
-                    std::cout << j << std::endl;
-                }
-                return 0;
             case type::INVALID:
             case type::list:
             default:
                 return -1;
+        }
+        return 0;
+    }
+    if(c.type() == type::list_dependencies){
+        for(auto &j : c.getJson()){
+            std::cout << std::setw(4) << j << std::endl;
         }
         return 0;
     }
