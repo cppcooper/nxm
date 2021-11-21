@@ -5,118 +5,126 @@
 #include <cpr/cpr.h>
 #include <gumbodocument.h>
 #include <gumbonode.h>
+#include <nlohmann/json.hpp>
+
+namespace nlm = nlohmann;
 
 namespace globals {
     std::regex dep_pattern("(Nexus requirements|Off-site requirements)");
 }
-
-bool replace(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_pos = str.find(from);
-    if(start_pos == std::string::npos)
-        return false;
-    str.replace(start_pos, from.length(), to);
-    return true;
-}
-
-enum step {
-    one = 1,
-    two,
-    three
-};
 enum type{
     onsite = 1,
     offsite = 2,
     invalid = 0xFF
 };
 
-int search_dependencies(nlm::json &json, step i, const GWNode &root, type k = invalid){
-    step next = (step)(i + 1);
-    std::vector<GWNode> nodes;
-    std::string buffer;
-    int tmp = 0;
+// prototype to scrape a single mod page
+long scrape_mod_page(const Nxm &cli, nlm::json &parent, const std::string &mod);
+// Nxm can batch many mods together
+nlm::json scrape_dependencies(const Nxm &cli) {
     int status = 0;
-    switch(i) {
-        case one:
-            nodes = root.getElementsByClassName("accordionitems");
-            if (!nodes.empty()) {
-                return search_dependencies(next, nodes[0]);
-            }
-            std::cout << "None" << std::endl;
-            return 0;
-        case two:
-            nodes = root.getElementsByClassName("tabbed-block");
-            for (int j = 0; j < (2 > nodes.size() ? 1 : 2); ++j) {
-                if (!nodes[j].getElementsByTagName(HtmlTag::H3).empty()) {
-                    buffer = nodes[j].getElementsByTagName(HtmlTag::H3)[0].innerText();
-                    if (std::regex_match(buffer, globals::dep_pattern)) {
-                        if(buffer == "Nexus requirements"){
-                            status += search_dependencies(next, nodes[j], onsite);
-                        } else {
-                            status += search_dependencies(next, nodes[j], offsite);
-                        }
-                        continue;
-                    } else if (j == 0) {
-                        std::cout << " None" << std::endl;
-                        return 0;
-                    }
-                } else {
-                    std::cerr << "Error: HTML parsing: couldn't find h3 tag under tabbed-block" << std::endl;
-                    return 2;
-                }
-            }
-            return status;
-        case three:
-            switch(k) {
-                case onsite:
-                    std::cout << "nxm dependencies" << std::endl;
-                    break;
-                case offsite:
-                    std::cout << "offsite dependencies" << std::endl;
-                    break;
-                default:
-                    std::cerr << "An unknown error has occurred" << std::endl;
-                    return 2;
-            }
-            nodes = root.getElementsByTagName(HtmlTag::A);
-            for (auto link: nodes) {
-                switch (k) {
-                    case onsite:
-                        buffer = link.getAttribute("href");
-                        tmp = buffer.find_last_of("/") + 1;
-                        buffer = std::string(std::string_view(buffer.c_str() + tmp, buffer.size() - tmp));
-                        json["onsite"] = {
-                            {"name",link.innerText()},
-                            {"mod_id",buffer},
-                            {"href", link.getAttribute("href")}};
-                        break;
-                    case offsite:
-                        json["offsite"] = {{"name",link.innerText()},
-                                           {"href",link.getAttribute("href")}};
-                        break;
-                }
-            }
-            return 0;
-    }
-    return -(int)i;
-}
-
-nlm::json web_scraper(const Nxm &cli) {
-    std::string resource = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
-    replace(resource, "{game_domain}", cli.arg1);
-    int status = 0;
-    nvm::json dependencies;
-    for(auto mod : cli.mods) { 
-        std::string uri = resource;
-        replace(uri, "{mod_id}", mod);
-        // todo: implement caching
-        cpr::Response r = cpr::Get(cpr::Url{uri});
-        if(r.status_code == 200) {
-            auto doc = GWDocument::parse(r.text);
-            std::cout << "Dependencies for mod " << mod << std::endl;
-            search_dependencies(dependencies[mod], step::one, doc.rootNode());
-            continue;
+    nlm::json dependencies;
+    for(auto mod : cli.mods) {
+        dependencies["dependencies"] = {};
+        status += scrape_mod_page(cli, dependencies["dependencies"], std::to_string(mod));
+        if(status != 0){
+            std::cerr << "web scraper has encountered some sort of problem" << std::endl;
+            exit(2);
         }
-        //return r.status_code;
     }
     return dependencies;
+}
+
+// prototype to page parser
+long add_dependencies(const Nxm &cli, nlm::json &json, const GWNode &root);
+// scrape a single mod page
+long scrape_mod_page(const Nxm &cli, nlm::json &parent, const std::string &mod) {
+    std::string resource = "https://www.nexusmods.com/{game_domain}/mods/{mod_id}";
+    auto replace = [](std::string& str, const std::string& from, const std::string& to) {
+        size_t start_pos = str.find(from);
+        if (start_pos == std::string::npos)
+            return;
+        str.replace(start_pos, from.length(), to);
+    };
+    replace(resource, "{game_domain}", cli.arg1);
+    std::string uri = resource;
+    replace(uri, "{mod_id}", mod);
+    // todo: implement caching of web pages
+    cpr::Response r = cpr::Get(cpr::Url{uri});
+    if(r.status_code == 200) {
+        //std::cout << r.text << std::endl;
+        std::ofstream f(std::filesystem::path("/tmp/mod.html"));
+        f.write(r.text.c_str(),r.text.size());
+        auto doc = GWDocument::parse(r.text);
+        std::cout << "Scraping mod " << mod << " page.." << std::endl;
+        return add_dependencies(cli, parent["dependencies: mod " + mod], doc.rootNode());
+    }
+    return r.status_code;
+}
+
+// prototype to a convenience function to package requirements into a json
+nlm::json package_requirements(const Nxm &cli, const std::vector<GWNode> &links, const type &req_type);
+// parses the page and packages links into a json
+long add_dependencies(const Nxm &cli, nlm::json &json, const GWNode &root){
+    try {
+        auto parents = root.getElementsByClassName("accordionitems");
+        if(!parents.empty()) {
+            auto req_sec_parent = parents[0];
+            auto req_sections = req_sec_parent.getElementsByClassName("tabbed-block");
+            size_t loop_length = req_sections.size() < 2 ? req_sections.size() : 2;
+            for (int j = 0; j < loop_length; ++j) {
+                std::string section_title = req_sections[j].getElementsByTagName(HtmlTag::H3)[0].innerText();
+                if (std::regex_match(section_title, globals::dep_pattern)) {
+                    auto links = req_sections[j].getElementsByTagName(HtmlTag::A);
+                    if (section_title == "Nexus requirements") {
+                        json["onsite"] = package_requirements(cli, links, onsite);
+                    } else {
+                        json["offsite"] = package_requirements(cli, links, offsite);
+                    }
+                }
+            }
+        } else {
+            // todo: search document for adult content
+            std::cerr << "first GWNode list was empty" << std::endl;
+            std::cerr << "This probably just means this is an adult mod" << std::endl;
+            return 2;
+        }
+    } catch (const std::exception &e){
+        std::cerr << e.what() << std::endl;
+        std::cerr << "The page format may have changed" << std::endl;
+        return 2;
+    }
+    return 0;
+}
+
+// packages links based on type
+nlm::json package_requirements(const Nxm &cli, const std::vector<GWNode> &links, const type &req_type) {
+    nlm::json package;
+    std::string buffer;
+    int tmp = 0;
+    int loop_count = 0;
+    for (auto link: links) {
+        switch (req_type) {
+            case onsite:
+                // First we get the mod id
+                buffer = link.getAttribute("href");
+                tmp = buffer.find_last_of("/") + 1;
+                buffer = std::string(std::string_view(buffer.c_str() + tmp, buffer.size() - tmp));
+                // Now we can build our json package
+                package[loop_count] = {
+                        {"name",   link.innerText()},
+                        {"mod_id", buffer},
+                        {"href",   link.getAttribute("href")}};
+                scrape_mod_page(cli, package[loop_count++], buffer);
+                break;
+            case offsite:
+                package[loop_count++] = {
+                        {"name", link.innerText()},
+                        {"href", link.getAttribute("href")}};
+                break;
+            case invalid:
+                break;
+        }
+    }
+    return package;
 }
