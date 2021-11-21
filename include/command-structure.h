@@ -26,7 +26,7 @@ struct Nxm {
     std::string arg2;
     std::string arg3;
     std::string arg4;
-    Std::vector<int> mods;
+    std::vector<int> mods;
     bool print = false;
     Nxm(){
         auto add_game_option = [&](CLI::App* cli) {
