@@ -7,8 +7,7 @@ NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/) .
         - [Dependencies](#dependencies)
 - [Install](#install)
 - [Usage](#usage)
-
-This software has been developed as a plugin to run on Orthanc DICOM servers.
+- 
 ## Getting Started
 ### Clone
 Don't forget to populate submodules.
