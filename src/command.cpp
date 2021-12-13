@@ -1,10 +1,10 @@
 #include <command.h>
+#include <web-scraper.h>
 
 namespace globals {
     extern std::string apikey;
 }
 
-extern nlm::json scrape_dependencies(const Nxm &cli);
 int Command::sendRequest() {
     if (!valid_args) return -1;
     switch (request_type) {
@@ -36,8 +36,12 @@ int Command::sendRequest() {
             break;
         case type::NONE:
             switch (command_type) {
-                case type::list_dependencies:
-                    json = scrape_dependencies(cli);
+                case type::list_dependencies: {
+                    NxmWebScraper nws(cli);
+                    nws.process_args();
+                    //json =
+                    //json = scrape_dependencies(cli);
+                }
                 case type::list:
                     break;
                 default:
