@@ -56,7 +56,7 @@ bool NxmWebScraper::query_mod_page(std::string mod) {
 void NxmWebScraper::scrape_requirements(const std::string &mod, const cpr::Response &r){
     if(r.status_code == 200){
         auto doc = GWDocument::parse(r.text);
-        std::cout << "Scraping mod " << mod << " page.." << std::endl;
+        std::cout << "\x1b[A\r" << "Scraping mod " << mod << " page.." << std::endl;
         try {
             auto parents = doc.rootNode().getElementsByClassName("accordionitems");
             if(!parents.empty()) {
