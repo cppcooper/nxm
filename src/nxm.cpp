@@ -1,5 +1,3 @@
-//export module nxm;
-#define export
 #include <command-structure.h>
 #include <command.h>
 #include <iostream>
@@ -15,7 +13,7 @@ namespace globals {
 }
 
 int parse_response(const Command &c, const Nxm &cli);
-export int nxm(std::string &apikey, const Nxm &cli){
+int nxm(std::string &apikey, const Nxm &cli){
     globals::apikey = apikey;
     cpr::Response r = cpr::Get(cpr::Url("https://api.nexusmods.com/v1/users/validate.json"),
                                cpr::Header{{"apikey",apikey}});
