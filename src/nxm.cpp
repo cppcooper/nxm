@@ -14,18 +14,22 @@ namespace globals {
 
 int parse_response(const Command &c, const Nxm &cli);
 int nxm(std::string &apikey, const Nxm &cli){
+    // We need to validate the API key first
     globals::apikey = apikey;
     cpr::Response r = cpr::Get(cpr::Url("https://api.nexusmods.com/v1/users/validate.json"),
                                cpr::Header{{"apikey",apikey}});
     if(r.status_code == 200){
         auto nxm_sub = cli.nxm.get_subcommands();
         if(nxm_sub.size() == 1){
+            // Prepare the command the user specified in the command line
             Command command(nxm_sub[0], cli);
             if(command.good()) {
+                // Execute
                 int status = command.sendRequest();
                 if (status != 0) {
                     return status;
                 }
+                // Parse the response to the command
                 return parse_response(command, cli);
             } else {
                 std::cerr << command.getError() << std::endl;
