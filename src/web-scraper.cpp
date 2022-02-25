@@ -23,7 +23,7 @@ namespace globals {
 // webscraper processes args
 void NxmWebScraper::process_args() {
     int status = 0;
-    // Nxm can batch many mods together
+    // scrape dependencies for the command line mods
     for(auto mod : cli.mods) {
         std::string required_mod = std::to_string(mod);
         if (query_mod_page(required_mod)) {
@@ -54,19 +54,25 @@ bool NxmWebScraper::query_mod_page(std::string mod) {
 }
 
 void NxmWebScraper::scrape_requirements(const std::string &mod, const cpr::Response &r){
+    // Check the response to our query for the mod page
     if(r.status_code == 200){
+        // We'll need to parse the page as a GWDocument to keep things simple
         auto doc = GWDocument::parse(r.text);
         std::cout << "\x1b[A\r" << "Scraping mod " << mod << " page.." << std::endl;
         try {
+            // First landmark
             auto parents = doc.rootNode().getElementsByClassName("accordionitems");
             if(!parents.empty()) {
-                auto req_sec_parent = parents[0];
-                auto req_sections = req_sec_parent.getElementsByClassName("tabbed-block");
+                // Second landmark
+                auto req_sections = parents[0].getElementsByClassName("tabbed-block");
                 size_t loop_length = req_sections.size() < 2 ? req_sections.size() : 2;
                 for (int j = 0; j < loop_length; ++j) {
+                    // Third landmark
                     std::string section_title = req_sections[j].getElementsByTagName(HtmlTag::H3)[0].innerText();
                     if (std::regex_match(section_title, globals::dep_pattern)) {
+                        // Our destination, the requirement links
                         auto links = req_sections[j].getElementsByTagName(HtmlTag::A);
+                        // Parsing requirements depends on whether they are on or off site
                         if (section_title == "Nexus requirements") {
                             parse_requirements(mod, links, onsite);
                         } else {
@@ -77,7 +83,7 @@ void NxmWebScraper::scrape_requirements(const std::string &mod, const cpr::Respo
             } else {
                 // todo: figure out how to get adult mod pages, cookies/login? and if that is the only edge case where this branch triggers
                 std::cerr << "first GWNode list was empty" << std::endl;
-                std::cerr << "This probably just means this is an adult mod, so we'll just skip it" << std::endl;
+                std::cerr << "This probably just means this is an adult mod, so we'll just skip it.. or you can modify the source code and make a PR" << std::endl;
                 exit(-42);
             }
         } catch (const std::exception &e){
@@ -88,29 +94,31 @@ void NxmWebScraper::scrape_requirements(const std::string &mod, const cpr::Respo
     } else {
         // todo: error
     }
+    std::cout << "\x1b[A\r                                          " << std::endl;
 }
 
-//
 void NxmWebScraper::parse_requirements(const std::string &mod, const std::vector<GWNode> &links, const type &req_type) {
+    // iterate all the links
     for (auto link: links) {
+        std::string url = link.getAttribute("href");
+        // onsite and offsite are different
         switch (req_type) {
             case onsite: {
-                /*mod as in what has a req*/
                 // First we get the mod id of the requirement
-                std::string required_mod = link.getAttribute("href");
-                int mod_pos = required_mod.find_last_of("/") + 1;
-                required_mod = std::string(std::string_view(required_mod.c_str() + mod_pos, required_mod.size() - mod_pos));
+                int mod_pos = url.find_last_of("/") + 1;
+                url = std::string(std::string_view(url.c_str() + mod_pos, url.size() - mod_pos));
                 // Then we record the relationship
-                const auto &[iter,inserted] = dependencies[mod].emplace(required_mod);
-                if(inserted) {
-                    if (query_mod_page(required_mod)) {
-                        scrape_requirements(required_mod, pages[required_mod]);
+                const auto &[iter, inserted] = dependencies[mod].emplace(url);
+                if (inserted) {
+                    // Check onsite requirements for more requirements
+                    if (query_mod_page(url)) {
+                        scrape_requirements(url, pages[url]);
                     }
                 }
                 break;
             }
             case offsite:
-                off_site_dependencies.emplace(mod, link.getAttribute("href"));
+                off_site_dependencies.emplace(mod, url);
                 break;
             case invalid:
                 break;
