@@ -16,7 +16,8 @@ private:
     };
     using mod_id = std::string;
     using url = std::string;
-    std::unordered_map<mod_id, std::unordered_set<mod_id>> dependencies;
+    using dependencies = std::unordered_set<mod_id>;
+    std::unordered_map<mod_id, dependencies> map;
     std::unordered_multimap<mod_id, url> off_site_dependencies;
     std::unordered_map<mod_id, cpr::Response> pages;
     const Nxm &cli;

@@ -24,17 +24,25 @@ namespace globals {
 void NxmWebScraper::process_args() {
     int status = 0;
     // scrape dependencies for the command line mods
-    for(auto mod : cli.mods) {
+    for (auto mod: cli.mods) {
         std::string required_mod = std::to_string(mod);
         if (query_mod_page(required_mod)) {
             scrape_requirements(required_mod, pages[required_mod]);
         }
     }
     // todo: build dependency tree
-    for(const auto &[mod, deps] : dependencies){
-        std::cout << mod << " dependencies:" << std::endl;
-        for(const auto &modd : deps ){
-            std::cout << "   " << modd << std::endl;
+    using dependents = std::unordered_set<mod_id>;
+    std::unordered_map<mod_id, dependents> map2;
+    if (cli.ld_flip) {
+        for (const auto &[mod, deps]: map) {
+            for (const auto &modd: deps) {
+                map2[modd].emplace(mod);
+            }
+        }
+    }
+    if (cli.ld_tree) {
+        if (cli.ld_flip) {
+            map = map2;
         }
     }
 }
@@ -82,7 +90,7 @@ void NxmWebScraper::scrape_requirements(const std::string &mod, const cpr::Respo
                 }
             } else {
                 // todo: figure out how to get adult mod pages, cookies/login? and if that is the only edge case where this branch triggers
-                std::cerr << "first GWNode list was empty" << std::endl;
+                std::cerr << "first GWNode list was empty. ";
                 std::cerr << "This probably just means this is an adult mod, so we'll just skip it.. or you can modify the source code and make a PR" << std::endl;
                 exit(-42);
             }
@@ -106,13 +114,13 @@ void NxmWebScraper::parse_requirements(const std::string &mod, const std::vector
             case onsite: {
                 // First we get the mod id of the requirement
                 int mod_pos = url.find_last_of("/") + 1;
-                url = std::string(std::string_view(url.c_str() + mod_pos, url.size() - mod_pos));
+                std::string dependency = std::string(url.c_str() + mod_pos, url.size() - mod_pos);
                 // Then we record the relationship
-                const auto &[iter, inserted] = dependencies[mod].emplace(url);
+                const auto &[iter, inserted] = map[mod].emplace(dependency);
                 if (inserted) {
                     // Check onsite requirements for more requirements
-                    if (query_mod_page(url)) {
-                        scrape_requirements(url, pages[url]);
+                    if (query_mod_page(dependency)) {
+                        scrape_requirements(dependency, pages[dependency]);
                     }
                 }
                 break;

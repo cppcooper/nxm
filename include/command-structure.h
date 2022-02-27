@@ -28,7 +28,8 @@ struct Nxm {
     std::string arg4;
     std::vector<int> mods;
     bool print = false;
-    bool dependencies_first = false;
+    bool ld_flip = false;
+    bool ld_tree = false;
     Nxm(){
         auto add_game_option = [&](CLI::App* cli) {
             cli->add_option("game",arg1, "game domain, for a listing run `nxm list games`");
@@ -53,6 +54,7 @@ struct Nxm {
         add_mod_option(list_mod_files);
         add_game_option(list_dependencies_files);
         list_dependencies_files->add_option("mods", mods, "mod ids");
-        list_dependencies_files->add_flag("--top-down", dependencies_first, "mod ids");
+        list_dependencies_files->add_flag("--flip", ld_flip, "flips dependency relationship to put dependents under dependencies");
+        list_dependencies_files->add_flag("--tree", ld_tree, "prints the list as a tree");
     }
 };
