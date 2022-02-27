@@ -30,7 +30,11 @@ namespace type {
         NONE = 0xFF
     };
 }
-
+/* Class: Command
+ * This class performs the second stage of parsing the command line arguments.
+ * Once parsed it embodies the commands the user intends to execute.
+ * It then executes the correct subroutines needed to perform the commands requested.
+ */
 class Command {
 private:
     const char* download_uri = "/v1/games/{game_domain_name}/mods/{mod_id}/files/{id}/download_link.json"; //GET
@@ -44,6 +48,7 @@ private:
     const char* list_trending_uri = "/v1/games/{game_domain_name}/mods/trending.json"; //GET
     const char* list_files_uri = "/v1/games/{game_domain_name}/mods/{mod_id}/files.json"; //GET
 protected:
+    // Commands can have sub-commands, and as such this helps determine that a command is a sub-command and what to actually do
     Command* parent = nullptr;
     const Nxm &cli;
     const CLI::App* command;
