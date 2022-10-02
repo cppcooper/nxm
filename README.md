@@ -2,7 +2,7 @@
 NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/).
 
 Unfinished:
- - dependency listing
+ - dependency listing (formatting)
 
 Unimplemented plans:
  - downloads
