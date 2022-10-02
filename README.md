@@ -1,5 +1,5 @@
 # Nexus Mods CLI (NXM)
-NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/) .
+NXM is a command line interface for [Nexus Mods](https://www.nexusmods.com/). It is not fully implemented, support for downloads is not complete and dependency formatting is unfinished.
 
 ### Table of Contents
 - [Getting Started](#getting-started)
